@@ -14,6 +14,7 @@ func Run(addr string){
 		"addr": addr,
 	}).Info("Server starts")
 
+
 	http.HandleFunc("/healthCheck", withTracing(HealthCheckHandler))
 	http.HandleFunc("/notification", withTracing(NotificationHandler))
 

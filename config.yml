@@ -1,0 +1,6 @@
+api:
+ addr: ""
+ port: 8080
+kafka:
+ addr: ""
+ notif_topic: "mt-notifcation"
