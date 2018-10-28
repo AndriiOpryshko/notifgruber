@@ -13,16 +13,41 @@ type ApiConf struct {
 	Port int `yaml:"port"`
 }
 
-type KafkaConf struct {
-	Addr string `yaml:"addr"`
+type ProducerConf struct {
+	Addr       string `yaml:"addr"`
 	NotifTopic string `yaml:"notif_topic"`
+	MaxRetry int `yaml:"max_retry"`
+	IsSuccess bool `yaml:"is_success"`
+	RetryBackOff int `yaml:"retry_backoff"`
+}
+
+func (pc ProducerConf) GetAddr() string{
+	return pc.Addr
+}
+
+func (pc ProducerConf) GetTopic()string {
+	return pc.NotifTopic
+}
+
+func (pc ProducerConf) GetMaxRetry() int{
+	return pc.MaxRetry
+}
+
+func (pc ProducerConf) GetIsSuccess() bool{
+	return pc.IsSuccess
+}
+
+func (pc ProducerConf) GetRetryBackoffSec() int{
+	return pc.RetryBackOff
 }
 
 // Struct for all configs
 type Config struct {
-	ApiConf ApiConf `yaml:"api"`
-	KafkaConf KafkaConf `yaml:"kafka"`
+	ApiConf      *ApiConf      `yaml:"api"`
+	ProducerConf *ProducerConf `yaml:"producer"`
 }
+
+
 
 // Config global object
 var config *Config = &Config{}
@@ -55,4 +80,8 @@ func InitConfig() {
 	log.WithFields(log.Fields{
 		"success": true,
 	}).Info("Inition config")
+}
+
+func GetProducerConfig() *ProducerConf {
+	return config.ProducerConf
 }

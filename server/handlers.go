@@ -74,8 +74,7 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-	notifProducer.PushNotifications(nots)
+	notifChan <- nots
 
 	resp.IsSuccess = true
 	wrightResponse(w, http.StatusOK, resp)

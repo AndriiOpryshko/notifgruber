@@ -1,6 +1,9 @@
 api:
  addr: ""
  port: 8080
-kafka:
+producer:
  addr: "kafka:9092"
  notif_topic: "mt-notifcation"
+ max_retry: 5
+ is_success: true
+ retry_backoff: 2

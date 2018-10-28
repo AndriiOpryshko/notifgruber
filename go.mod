@@ -1,7 +1,7 @@
 module github.com/AndriiOpryshko/notifgruber
 
 require (
-	github.com/Shopify/sarama v1.19.0 // indirect
+	github.com/Shopify/sarama v1.19.0
 	github.com/confluentinc/confluent-kafka-go v0.11.6
 	github.com/eapache/go-resiliency v1.1.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect

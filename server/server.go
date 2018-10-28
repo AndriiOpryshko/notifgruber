@@ -12,6 +12,8 @@ import (
 
 var notifProducer *notifications.NotificationProducer
 
+var notifChan = make(chan []*notifications.Notification)
+
 
 func Run(addr string, np *notifications.NotificationProducer){
 	log.WithFields(log.Fields{
@@ -23,6 +25,15 @@ func Run(addr string, np *notifications.NotificationProducer){
 
 	http.HandleFunc("/healthCheck", withTracing(HealthCheckHandler))
 	http.HandleFunc("/notification", withTracing(NotificationHandler))
+
+
+	go func() {
+		for {
+			nots := <-notifChan
+			notifProducer.PushNotifications(nots)
+		}
+		defer close(notifChan)
+	}()
 
 	var gracefulStop = make(chan os.Signal)
 	signal.Notify(gracefulStop, syscall.SIGTERM)

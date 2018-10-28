@@ -12,7 +12,7 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetLevel(log.DebugLevel)
 	InitConfig()
-	notsProducer := notifications.InitProducer(config.KafkaConf.Addr, config.KafkaConf.NotifTopic)
+	notsProducer := notifications.InitProducer(GetProducerConfig())
 	addr := fmt.Sprintf("%s:%d", config.ApiConf.Addr, config.ApiConf.Port)
 
 	go notsProducer.Run()
