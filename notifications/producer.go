@@ -7,21 +7,24 @@ import (
 	"time"
 )
 
-func InitProducer(addr string, topic string) *NotificationProducer{
+type ProducerConfig interface {
+	GetAddr() string
+	GetTopic() string
+	GetMaxRetry() int
+	GetIsSuccess() bool
+	GetRetryBackoffSec() int
+
+}
+
+func InitProducer(conf ProducerConfig) *NotificationProducer{
 	return &NotificationProducer{
-		addr: addr,
-		topic: topic,
-		maxRetry: 5,
-		success: true,
+		conf: conf,
 		Nots: make(chan *Notifications),
 	}
 }
 
 type NotificationProducer struct {
-	addr string
-	topic string
-	maxRetry int
-	success bool
+	conf ProducerConfig
 	Nots chan *Notifications
 }
 
@@ -32,10 +35,10 @@ func (np *NotificationProducer) PushNotifications(nots []*Notification){
 func (np *NotificationProducer) Run(){
 	config := sarama.NewConfig()
 	config.Producer.RequiredAcks = sarama.WaitForAll
-	config.Producer.Retry.Max = np.maxRetry
-	config.Producer.Return.Successes = np.success
-	config.Metadata.Retry.Backoff = 2*time.Second
-	producer, err := sarama.NewSyncProducer([]string{np.addr}, config)
+	config.Producer.Retry.Max = np.conf.GetMaxRetry()
+	config.Producer.Return.Successes = np.conf.GetIsSuccess()
+	config.Metadata.Retry.Backoff = time.Second * time.Duration(np.conf.GetRetryBackoffSec())
+	producer, err := sarama.NewSyncProducer([]string{np.conf.GetAddr()}, config)
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +49,7 @@ func (np *NotificationProducer) Run(){
 	}()
 
 	// Produce messages to topic (asynchronously)
-	topic := np.topic
+	topic := np.conf.GetTopic()
 	for {
 		nots := <- np.Nots
 		notsProto, err := proto.Marshal(nots)
