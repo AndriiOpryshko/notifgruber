@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"github.com/AndriiOpryshko/notifgruber/notifications"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -45,6 +45,12 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 		resp.IsSuccess = false
 		resp.Msg = EMPTYBODYREQUEST
 		log.Printf("%s. %s", resp.Msg, err)
+
+		log.WithFields(log.Fields{
+			"msg": resp.Msg,
+			"err": err,
+		}).Error("Error while gets body")
+
 		wrightResponse(w, http.StatusBadRequest, resp)
 		return
 	}
@@ -53,12 +59,17 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(bodyBytes, &nots)
 
-	log.Printf("Body: %v", nots)
+	log.WithFields(log.Fields{
+		"notifications": nots,
+	}).Debug("Posted notifications")
 
 	if err != nil {
 		resp.IsSuccess = false
 		resp.Msg = WRONGBODYSTRUCT
-		log.Printf("%s. %s", resp.Msg, err)
+		log.WithFields(log.Fields{
+			"msg": resp.Msg,
+			"err": err,
+		}).Error("Error while gets body")
 		wrightResponse(w, http.StatusBadRequest, resp)
 		return
 	}

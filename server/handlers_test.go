@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"log"
 	"strings"
+	log "github.com/sirupsen/logrus"
 )
 
 // For testing healthcheck and notification requests
@@ -24,7 +24,10 @@ var healthCheckTestResp = responseExpected{
 
 // Test healthCheck handler
 func TestHealthCheckHandler(t *testing.T) {
-	log.Print(healthCheckTestResp.respTestName)
+	log.WithFields(log.Fields{
+		"testName": healthCheckTestResp.respTestName,
+	}).Info("Testing healthCheck")
+
 	req, err := http.NewRequest("GET", "/healthCheck", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -70,7 +73,10 @@ var postedNots = []string{
 func TestNotificationHandler(t *testing.T) {
 	for i, nots := range postedNots {
 
-		log.Print(notsTestResps[i].respTestName)
+		log.WithFields(log.Fields{
+			"testName": notsTestResps[i].respTestName,
+		}).Info("Testing notification")
+
 		req, err := http.NewRequest("POST", "/notification", strings.NewReader(nots))
 		req.Header.Set("Content-Type", "application/json")
 

@@ -2,12 +2,16 @@ package server
 
 import (
 	"net/http"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 func withTracing(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("Tracing request from %s for %s %s", r.RemoteAddr, r.Method, r.RequestURI)
+		log.WithFields(log.Fields{
+			"addr": r.RemoteAddr,
+			"method": r.Method,
+			"uri": r.URL.Path,
+		}).Info("Tracing request")
 		next.ServeHTTP(w, r)
 	}
 }
