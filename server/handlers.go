@@ -55,7 +55,7 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var nots []notifications.Notification
+	var nots []*notifications.Notification
 
 	err = json.Unmarshal(bodyBytes, &nots)
 
@@ -73,6 +73,9 @@ func NotificationHandler(w http.ResponseWriter, r *http.Request) {
 		wrightResponse(w, http.StatusBadRequest, resp)
 		return
 	}
+
+
+	notifProducer.PushNotifications(nots)
 
 	resp.IsSuccess = true
 	wrightResponse(w, http.StatusOK, resp)

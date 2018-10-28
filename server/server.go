@@ -7,12 +7,18 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+	"github.com/AndriiOpryshko/notifgruber/notifications"
 )
 
-func Run(addr string){
+var notifProducer *notifications.NotificationProducer
+
+
+func Run(addr string, np *notifications.NotificationProducer){
 	log.WithFields(log.Fields{
 		"addr": addr,
 	}).Info("Server starts")
+
+	notifProducer = np
 
 
 	http.HandleFunc("/healthCheck", withTracing(HealthCheckHandler))
